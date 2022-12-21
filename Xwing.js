@@ -48,8 +48,8 @@ window.addEventListener("load", function() {
     class Player {
         constructor(game) {
             this.game = game;
-            this.width = 120;
-            this.height = 190;
+            this.width = 60;
+            this.height = 100;
             this.x = 20;
             this.y = 100;
             this.speedY = 0;
