@@ -133,14 +133,23 @@ window.addEventListener("load", function() {
             this.game = game;
             this.fontSize = 25;
             this.fontFamily = "Imact";
-            this.color = "yellow"; //ammo color
+            this.color = "white"; //score and ammo color
         }
         draw(context){
-            //ammo
+            context.save(); //to use shadow in this draw together with restroce function
+            context.shadowOFFsetX = 2;
+            context.shadowOFFsetY = 2;
+            context.shadowColor = "black";
+            context.font = this.fontSize + "px" + this.fontFamily;
             context.fillStyle = this.color;
+            //score
+            context.fillText("Score: " + this.game.score, 20, 40);
+            
+            //ammo
             for (let i = 0; i < this.game.ammo; i++) {
                 context.fillRect(20 + 5 * i, 50, 3, 20);
             }
+            context.restore(); //to use shadow in this draw
         }
     }
     class Game {
@@ -159,6 +168,8 @@ window.addEventListener("load", function() {
             this.ammoTimer = 0;
             this.ammoInterval = 500; // fillin ammo
             this.gameOver = false;
+            this.score = 0;
+            this.winningScore = 10; // winning score
         }
         update(deltaTime){
             this.player.update();
@@ -181,6 +192,7 @@ window.addEventListener("load", function() {
                         if (enemy.lives <= 0){
                             enemy.markedForDeletion = true;
                             this.score += enemy.score;
+                            if (this.score > this.winningScore) this.gameOver = true;
                         }
                     }
                 })
