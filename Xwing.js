@@ -131,7 +131,7 @@ window.addEventListener("load", function() {
     class UI {
         constructor(game){
             this.game = game;
-            this.fontSize = 25;
+            this.fontSize = 20;
             this.fontFamily = "Imact";
             this.color = "white"; //score and ammo color
         }
@@ -140,7 +140,7 @@ window.addEventListener("load", function() {
             context.shadowOFFsetX = 2;
             context.shadowOFFsetY = 2;
             context.shadowColor = "black";
-            context.font = this.fontSize + "px" + this.fontFamily;
+            context.font = this.fontSize + "px " + this.fontFamily;
             context.fillStyle = this.color;
             //score
             context.fillText("Score: " + this.game.score, 20, 40);
@@ -149,6 +149,11 @@ window.addEventListener("load", function() {
             for (let i = 0; i < this.game.ammo; i++) {
                 context.fillRect(20 + 5 * i, 50, 3, 20);
             }
+            //timer
+            const formattedTime = (this.game.gameTime * 0.001).toFixed(1);
+            context.fillText ("Timer: " + formattedTime, 20, 90);
+
+
             //game over message
             if (this.game.gameOver){
                 context.textAlign = "center";
@@ -161,7 +166,7 @@ window.addEventListener("load", function() {
                     message1 = "You lose";
                     message2 = "Try again";
                 }
-                context.font = "50px" + this.fontFamily;
+                context.font = "50px " + this.fontFamily;
                 context.fillText(message1, this.game.width * 0.5, this.game.height * 0.5 - 40);
                 context.fillText(message2, this.game.width * 0.5, this.game.height * 0.5 + 40);
             }
@@ -186,8 +191,12 @@ window.addEventListener("load", function() {
             this.gameOver = false;
             this.score = 0;
             this.winningScore = 10; // winning score
+            this.gameTime = 0;
+            this.timeLimit = 5000; //game time limit
         }
         update(deltaTime){
+            if (!this.gameOver) this.gameTime += deltaTime;
+            if (this.gameTime > this.timeLimit) this.gameOver = true;
             this.player.update();
             if(this.ammoTimer > this.ammoInterval) {
                 if(this.ammo < this.maxAmmo) this.ammo++;
@@ -207,7 +216,7 @@ window.addEventListener("load", function() {
                         projectile.markedForDeletion = true;
                         if (enemy.lives <= 0){
                             enemy.markedForDeletion = true;
-                            this.score += enemy.score;
+                            if (!this.gameOver) this.score += enemy.score;
                             if (this.score > this.winningScore) this.gameOver = true;
                         }
                     }
