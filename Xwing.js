@@ -15,6 +15,8 @@ window.addEventListener("load", function() {
                     this.game.keys.push(e.key);
                 } else if(e.key ===" ") {
                     this.game.player.shootTop();
+                } else if(e.key === "d") {
+                    this.game.debug = !this.game.debug; //press D to show stroke
                 }
             });
             window.addEventListener("keyup", e => {
@@ -49,15 +51,18 @@ window.addEventListener("load", function() {
     class Player {
         constructor(game) {
             this.game = game;
-            this.width = 60;
-            this.height = 100;
+            this.width = 150;
+            this.height = 80;
             this.x = 20;
             this.y = 100;
+            this.frameX = 0; //purpose to show player animation
+            this.frameY = 0; //purpose to show player animation
+            this.maxFrame = 1; //purpose to show player animation, should be > 0
             this.speedX = 0;
             this.speedY = 0;
-            this.maxspeed = 2;
+            this.maxspeed = 5;
             this.projectiles =[];
-
+            this.image = document.getElementById("player");
         }
         update(){
                 if (this.game.keys.includes("ArrowUp")) {
@@ -77,10 +82,18 @@ window.addEventListener("load", function() {
                 projectile.update();
             });
             this.projectiles = this.projectiles.filter(projectile => !projectile.markedForDeletion);
+            //player animation
+            if (this.frameX < this.maxFrame) {
+                this.frameX++;
+            } else {
+                this.frameX = 0;
+            }
         }
         draw(context){
-            context.fillStyle = "white"
-            context.fillRect(this.x, this.y, this.width, this.height);
+            context.strokeStyle = "white";
+            if (this.game.debug) context.strokeRect(this.x, this.y, this.width, this.height); // draw stroke
+            context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, 
+                this.width, this.height, this.x, this.y, this.width, this.height);
             this.projectiles.forEach(projectile => {
                 projectile.draw(context);
             });
@@ -146,7 +159,7 @@ window.addEventListener("load", function() {
             this.game = game;
             this.image1 = document.getElementById("layer1");
             //this.image2 = document.getElementById("layer2");
-            this.layer1 = new Layer(this.game, this.image1, 1);
+            this.layer1 = new Layer(this.game, this.image1, 0.2);
             //this.layer2 = new Layer(this.game, this.image2, 1);
             this.layers =[this.layer1];
         }
@@ -224,6 +237,7 @@ window.addEventListener("load", function() {
             this.gameTime = 0;
             this.timeLimit = 5000; //game time limit
             this.speed = 1 //background speed
+            this.debug = false;
         }
         update(deltaTime){
             if (!this.gameOver) this.gameTime += deltaTime;
