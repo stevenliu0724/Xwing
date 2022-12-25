@@ -111,27 +111,42 @@ window.addEventListener("load", function() {
             this.x = this.game.width;
             this.speedX = Math.random() * -1.5 - 2.5;
             this.markedForDeletion = false;
-            this.lives = 5; //enemy lives
-            this.score = this.lives;
+            this.frameX = 0;
+            this.frameY = 0;
+            this.maxFrame = 0;
         }
         update(){
-            this.x += this.speedX;
+            this.x += this.speedX - this.game.speed;
             if (this.x + this.width < 0) this.markedForDeletion = true;
         }
         draw(context){
-            context.fillStyle = "red";
-            context.fillRect(this.x, this.y, this.width, this.height);
-            context.fillStyle = "white";
+            if(this.game.debug) context.strokeRect(this.x, this.y, this.width, this.height);
+            context.drawImage (this.image, this.x, this.y);
             context.font = "15px serif";
             context.fillText(this.lives, this.x, this.y);
         }
     }
-    class Angler1 extends Enemy {
+    class TIE extends Enemy {
         constructor(game){
             super(game);
-            this.width = 228 * 0.2; //enemy width
-            this.height = 160 * 0.2; //enemy height
+            this.width = 75; //enemy1 width
+            this.height = 75; //enemy1 height
+            this.lives = 1; //enemy1 live
+            this.score = this.lives;
             this.y = Math.random() * (this.game.height * 0.9 - this.height);
+            this.image = document.getElementById("enemy1");
+        }
+    }
+
+    class enemy2 extends Enemy {
+        constructor(game){
+            super(game);
+            this.width = 150; //enemy1 width
+            this.height = 150; //enemy1 height
+            this.lives = 3; //enemy2 live
+            this.score = this.lives;
+            this.y = Math.random() * (this.game.height * 0.9 - this.height);
+            this.image = document.getElementById("enemy2");
         }
     }
 
@@ -233,9 +248,9 @@ window.addEventListener("load", function() {
             this.ammoInterval = 500; // fillin ammo
             this.gameOver = false;
             this.score = 0;
-            this.winningScore = 10; // winning score
-            this.gameTime = 0;
-            this.timeLimit = 5000; //game time limit
+            this.winningScore = 20; // winning score
+            this.gameTime = 0; 
+            this.timeLimit = 50000; //game time limit
             this.speed = 1 //background speed
             this.debug = false;
         }
@@ -285,7 +300,9 @@ window.addEventListener("load", function() {
             });
         }
         addEnemy(){
-            this.enemies.push(new Angler1(this));
+            const randomize = Math.random();
+            if (randomize < 0.8) this.enemies.push(new TIE(this));
+            else this.enemies.push(new enemy2(this))
         }
         checkCollision(rect1, rect2){
             return( rect1.x + rect1.width > rect2.x &&
