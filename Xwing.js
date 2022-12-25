@@ -270,6 +270,7 @@ window.addEventListener("load", function() {
                 //check if collision
                 if(this.checkCollision(this.player, enemy)){
                     enemy.markedForDeletion = true;
+                    this.gameOver = true;
                 }
                 this.player.projectiles.forEach(projectile => {
                     if (this.checkCollision(projectile, enemy)){
